@@ -49,10 +49,21 @@ def solve_ipm_gradient(c, A, b):
     3. Minimize f(x) = c@x + F(x) using gradient decent.
     """
 
-    # 1. Define the barrier function, have a term for each
-    # Ax <= b
-    # and a term for x >= 0
+    # 1. Define the barrier function
+    def F(x):
+        # use logs to make expr explode as x->0
+        # Ax <= b <=> b - Ax >= 0
+        return -np.sum(np.log(b - A@x)) + np.sum(np.log(x))
 
+    # 1.5: Compute the gradient of the barrier function
+    def nabla_F(x):
+        # TODO
+        ...
+
+    # 2. Find x_0 as the minimum of the barrier, since the
+    #    barrier is convex this is where the gradient is zero.
+
+    # 3. Minimize f(x) = c@x + F(x) using gradient decent
 
     return np.array([0, 0, 0])
 
