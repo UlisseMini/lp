@@ -6,7 +6,7 @@ as this simplifies the code. Integrating newton's method will come later.
 
 LP is
 minimize c @ x
-such that A @ x <= b and x > 0
+such that A @ x <= b and x >= 0
 """
 
 import numpy as np
