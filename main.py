@@ -12,6 +12,10 @@ such that A @ x <= b and x >= 0
 import numpy as np
 np.set_printoptions(suppress=True, precision=4)
 
+import matplotlib.pyplot as plt
+import visuals
+
+
 # c = np.array([1, -2, 0.5])
 # A = np.array([
 #     [3, -1, 0],
@@ -57,7 +61,7 @@ def solve_ipm_gradient(c, A, b):
     def F(x):
         # use logs to make expr explode as x->0
         # Ax <= b <=> b - Ax >= 0
-        return -np.sum(np.log(b - A@x)) + np.sum(np.log(x))
+        return -np.sum(np.log(b - A@x)) - np.sum(np.log(x))
 
     # 1.5: Compute the gradient of the barrier function
     def nabla_F(x):
@@ -65,14 +69,32 @@ def solve_ipm_gradient(c, A, b):
         # TODO: Make sure this is right, learn vector calculus so I'm not a sad boi
         first = x * sum((A[:,j]) / (b - A@x) for j in range(len(b)))
         # gradient of np.sum(log(x))
-        second = (1/x)
+        second = -(1/x)
         return first + second
 
     # import IPython; IPython.embed()
     # 2. Find x_0 as the minimum of the barrier, since the
     #    barrier is convex this is where the gradient is zero.
+    # TODO
+    x = np.array([0.3, 0.3])
 
     # 3. Minimize f(x) = c@x + F(x) using gradient decent
+    def f(x, t):
+        return t*(c@x) + F(x)
+
+    def nabla_f(x, t):
+        return t*c + nabla_F(x)
+
+    t = 1
+    lr = 0.01
+    while True:
+        dx = nabla_f(x, t)
+        x -= dx * lr
+        print(f'f({x}) = {f(x,t)} c@x = {c@x} (t={t}, lr={lr})')
+        visuals.plot(c, A, b)
+        visuals.plot_grad(x, -dx*lr)
+        plt.show()
+
 
     return np.array([0, 0])
 
@@ -104,8 +126,8 @@ def test():
 
 
 def plot():
-    import visuals
     visuals.plot(c, A, b)
+    plt.show()
 
 
 def main():
