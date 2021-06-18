@@ -43,4 +43,9 @@ def plot(c, A, b):
 
     # required for labels
     ax.legend()
-    plt.show()
+
+
+def plot_grad(x, dx):
+    plt.scatter([x[0]], [x[1]])
+    plt.arrow(*x, *dx, width=0.05)
+
