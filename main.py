@@ -55,9 +55,14 @@ def solve_ipm_gradient(c, A, b):
 
     # 1.5: Compute the gradient of the barrier function
     def nabla_F(x):
-        # TODO
-        ...
+        # gradient of -np.sum(np.log(b - A@x))
+        # TODO: Make sure this is right, learn vector calculus so I'm not a sad boi
+        first = x * sum((A[:,j]) / (b - A@x) for j in range(len(b)))
+        # gradient of np.sum(log(x))
+        second = (1/x)
+        return first + second
 
+    # import IPython; IPython.embed()
     # 2. Find x_0 as the minimum of the barrier, since the
     #    barrier is convex this is where the gradient is zero.
 
