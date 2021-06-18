@@ -85,10 +85,13 @@ def solve_scipy(c, A, b):
     return res.x
 
 
-def test_solver(solver):
+def test_solver(solver, tol=5):
     x = solver(c, A, b)
 
-    if not (A@x <= b).all() or not (x >= 0).all():
+    c1 = ((A@x).round(tol) <= b).all()
+    c2 = (x.round(tol) >= 0).all()
+    if not c1 or not c2:
+        print(A @ x <= b)
         print("!! INVALID SOLUTION")
         print(f"A @ {x} <= b = {A@x <= b}")
 
