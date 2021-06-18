@@ -12,14 +12,20 @@ such that A @ x <= b and x >= 0
 import numpy as np
 np.set_printoptions(suppress=True, precision=4)
 
-c = np.array([1, -2, 0.5])
-A = np.array([
-    [3, -1, 0],
-    [-3, 1, 4],
-    [0, 1, 1],
-])
-b = np.array([1,2,4])
+# c = np.array([1, -2, 0.5])
+# A = np.array([
+#     [3, -1, 0],
+#     [-3, 1, 4],
+#     [0, 1, 1],
+# ])
+# b = np.array([1,2,4])
 
+c = np.array([-1, 2])
+A = np.array([
+    [1, 3],
+    [2, 2],
+])
+b = np.array([3,2])
 
 def solve_ipm_newton(c, A, b):
     """
@@ -68,7 +74,7 @@ def solve_ipm_gradient(c, A, b):
 
     # 3. Minimize f(x) = c@x + F(x) using gradient decent
 
-    return np.array([0, 0, 0])
+    return np.array([0, 0])
 
 
 def solve_scipy(c, A, b):
