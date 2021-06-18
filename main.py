@@ -12,8 +12,6 @@ such that A @ x <= b and x >= 0
 import numpy as np
 np.set_printoptions(suppress=True, precision=4)
 
-# TODO: matplotlib animation, this is R^3 so I can animate it.
-
 c = np.array([1, -2, 0.5])
 A = np.array([
     [3, -1, 0],
@@ -91,5 +89,19 @@ def test():
     test_solver(solve_ipm_gradient)
 
 
+def plot():
+    import visuals
+    visuals.plot(c, A, b)
+
+
+def main():
+    import sys
+    if len(sys.argv) < 2:
+        print(f'Usage: python main.py <test/plot>')
+        exit()
+
+    if sys.argv[1] == 'test': test()
+    if sys.argv[1] == 'plot': plot()
+
 if __name__ == '__main__':
-    test()
+    main()
