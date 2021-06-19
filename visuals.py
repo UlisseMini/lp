@@ -1,13 +1,36 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-def plot(c, A, b):
+# [xmin, xmax, ymin, ymax]
+ar = [-4, 4, -4, 4] # axis range
+
+def plot3d(c, A, b, path, num=100):
+    ax = plt.subplot(122, projection='3d')
+
+    # Draw path
+    # plot_path3d(ax, path, c=c)
+    cp = [10*c@x for x in path]
+    print('cp', cp)
+    ax.plot([x[0] for x in path], [x[1] for x in path], cp, color='red')
+
+    # Draw cost function
+    xs = np.linspace(ar[0], ar[1], num)
+    ys = np.linspace(ar[2], ar[3], num)
+    X, Y = np.meshgrid(xs, ys)
+    Z = c[0]*X + c[1]*Y
+    ax.plot_surface(X, Y, Z)
+
+    # Draw constraint lines
+
+    # ax.arrow(*x, *step, width=0.05)
+
+
+def plot(c, A, b, path):
     # adapted https://stackoverflow.com/a/57017638/7696065
+    # TODO: Plot cost colors, plot optimal point computed by scipy
 
-    fig, ax = plt.subplots()
-
-    # [xmin, xmax, ymin, ymax]
-    ar = [-4, 4, -4, 4] # axis range
+    # 1 row, 2 cols, id 1, plot3d uses id 2.
+    ax = plt.subplot(121)
 
     # barrier lines
     for i in range(len(b)):
@@ -34,7 +57,14 @@ def plot(c, A, b):
         origin='lower', cmap='Greys', alpha=0.3
     )
 
+    # path
+    plot_path(ax, path, c=c)
 
+    # Gradient
+    plt.scatter([path[-1][0]], [path[-1][1]])
+    plt.arrow(*path[-2], *(path[-1]-path[-2]), width=0.05)
+
+    # Axis and gridlines
     plt.axis(ar)
 
     ax.grid(True, which='both')
@@ -45,7 +75,9 @@ def plot(c, A, b):
     ax.legend()
 
 
-def plot_grad(x, dx):
-    plt.scatter([x[0]], [x[1]])
-    plt.arrow(*x, *dx, width=0.05)
 
+def plot_path3d(ax, path, c, color='red'):
+    ax.plot([x[0] for x in path], [x[1] for x in path], [c@x for x in path], color=color)
+
+def plot_path(ax, path, c, color='red'):
+    ax.plot([x[0] for x in path], [x[1] for x in path], color=color)

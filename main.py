@@ -87,12 +87,16 @@ def solve_ipm_gradient(c, A, b):
 
     t = 1
     lr = 0.01
+    path = [x]
     while True:
         dx = nabla_f(x, t)
-        x -= dx * lr
+        step = -dx * lr
+        x += step
+        path.append(x)
+
         print(f'f({x}) = {f(x,t)} c@x = {c@x} (t={t}, lr={lr})')
-        visuals.plot(c, A, b)
-        visuals.plot_grad(x, -dx*lr)
+        visuals.plot(c, A, b, path)
+        visuals.plot3d(c=c, A=A, b=b, path=path)
         plt.show()
 
 
