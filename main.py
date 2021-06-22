@@ -147,8 +147,7 @@ def main():
         print(f'Usage: python main.py <test/plot>')
         exit()
 
-    if sys.argv[1] == 'test': test()
-    if sys.argv[1] == 'plot': plot()
+    {'test': test, 'plot': plot}[sys.argv[1]]()
 
 if __name__ == '__main__':
     main()
