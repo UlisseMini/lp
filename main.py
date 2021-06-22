@@ -54,14 +54,13 @@ def barrier(x):
 
 
 def barrier_gradient(x):
-    #   grad(-sum(log(b - A@x)))
-    # = -sum(grad(log(b - a@x)))
-    # = -sum()
-    # TODO: Document derivation
+    # Derivation (paste into https://latexeditor.lagrida.com/)
+    # \nabla\left(\log(b_1-a_1^Tx) + \dots + \log(b_n - a_n^Tx)\right)
+    # = \frac{-a_1}{b_1 - a_1^Tx} + \dots + \frac{-a_n}{b_n - a_n^Tx}
+    #
+    # The -(1/x) part is straightforward by linearity
 
-    first = -sum((-A[i]/(b[i] - A[i].T @ x) for i in range(len(b))))
-
-    return first - (1/x)
+    return -sum((-A[i]/(b[i] - A[i].T @ x) for i in range(len(b)))) - (1/x)
 
 
 def solve_ipm_gradient(c, A, b):
