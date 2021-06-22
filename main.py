@@ -14,7 +14,7 @@ np.set_printoptions(suppress=True, precision=4)
 
 import matplotlib.pyplot as plt
 import visuals
-
+import finitediff
 
 # c = np.array([1, -2, 0.5])
 # A = np.array([
@@ -47,6 +47,23 @@ def solve_ipm_newton(c, A, b):
     raise NotImplementedError()
 
 
+def barrier(x):
+    # use logs to make expr explode as x->0
+    # Ax <= b <=> b - Ax >= 0
+    return -np.sum(np.log(b - A@x)) - np.sum(np.log(x))
+
+
+def barrier_gradient(x):
+    #   grad(-sum(log(b - A@x)))
+    # = -sum(grad(log(b - a@x)))
+    # = -sum()
+    # TODO: Document derivation
+
+    first = -sum((-A[i]/(b[i] - A[i].T @ x) for i in range(len(b))))
+
+    return first - (1/x)
+
+
 def solve_ipm_gradient(c, A, b):
     """
     This is a simplified interior point method.
@@ -57,46 +74,30 @@ def solve_ipm_gradient(c, A, b):
     3. Minimize f(x) = c@x + F(x) using gradient decent.
     """
 
-    # 1. Define the barrier function
-    def F(x):
-        # use logs to make expr explode as x->0
-        # Ax <= b <=> b - Ax >= 0
-        return -np.sum(np.log(b - A@x)) - np.sum(np.log(x))
-
-    # 1.5: Compute the gradient of the barrier function
-    def nabla_F(x):
-        # gradient of -np.sum(np.log(b - A@x))
-        # TODO: Make sure this is right, learn vector calculus so I'm not a sad boi
-        first = x * sum((A[:,j]) / (b - A@x) for j in range(len(b)))
-        # gradient of np.sum(log(x))
-        second = -(1/x)
-        return first + second
-
-    # import IPython; IPython.embed()
-    # 2. Find x_0 as the minimum of the barrier, since the
+    # 2. TODO Find x_0 as the minimum of the barrier, since the
     #    barrier is convex this is where the gradient is zero.
-    # TODO
     x = np.array([0.3, 0.3])
 
     # 3. Minimize f(x) = c@x + F(x) using gradient decent
     def f(x, t):
-        return t*(c@x) + F(x)
+        return t*(c@x) + barrier(x)
 
     def nabla_f(x, t):
-        return t*c + nabla_F(x)
+        return t*c + barrier_gradient(x)
 
     t = 1
     lr = 0.01
     while True:
         dx = nabla_f(x, t)
+        dx /= np.sqrt(np.dot(dx, dx))
         x -= dx * lr
         print(f'f({x}) = {f(x,t)} c@x = {c@x} (t={t}, lr={lr})')
         visuals.plot(c, A, b)
         visuals.plot_grad(x, -dx*lr)
         plt.show()
+        t += 1
 
-
-    return np.array([0, 0])
+    return x
 
 
 def solve_scipy(c, A, b):
@@ -120,7 +121,18 @@ def test_solver(solver, tol=5):
     print(f'cost {c @ x:.4f} x: {x}')
 
 
+def test_barrier_gradient():
+    xs = [[0.3, 0.3]]
+    for x in xs:
+        x = np.array(x)
+        want = finitediff.grad(barrier, x)
+        got = barrier_gradient(x)
+        if not np.allclose(want, got, atol=1e-5):
+            raise ValueError(f"want gradient {want} got gradient {got}")
+
+
 def test():
+    test_barrier_gradient()
     test_solver(solve_scipy)
     test_solver(solve_ipm_gradient)
 
