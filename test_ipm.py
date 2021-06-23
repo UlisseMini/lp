@@ -1,6 +1,6 @@
 import unittest
 import ipm
-import finitediff
+import numeric
 import numpy as np
 from functools import partial
 import problems
@@ -15,7 +15,7 @@ class TestBarrierGradient(unittest.TestCase):
         xs = [[0.3, 0.3]]
         for x in xs:
             x = np.array(x)
-            want = finitediff.grad(barrier, x)
+            want = numeric.gradient(barrier, x)
             got = barrier_gradient(x)
             self.assertTrue(
                 np.allclose(want, got, atol=1e-5),
