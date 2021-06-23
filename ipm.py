@@ -29,22 +29,23 @@ def solve_ipm_gradient(c, A, b):
 
     # 2. TODO Find x_0 as the minimum of the barrier, since the
     #    barrier is convex this is where the gradient is zero.
-    x = np.array([0.3, 0.3])
     F = partial(barrier, A=A, b=b)
     nabla_F = partial(barrier_gradient, A=A, b=b)
 
-    # 3. Minimize f(x) = c@x + F(x) using gradient decent
-    def f(x, t):
+    x = np.array([0.3, 0.3])
+
+    # 3. Minimize f(x) = c*c@x + F(x) using gradient decent
+    t = 1
+    def f(x):
         return t*(c@x) + F(x)
 
-    def nabla_f(x, t):
+    def nabla_f(x):
         return t*c + nabla_F(x)
 
-    t = 1
     lr = 0.01
     while t < 30:
         # TODO: Fix this hacky garbage
-        dx = nabla_f(x, t)
+        dx = nabla_f(x)
         dx /= np.sqrt(np.dot(dx, dx))
         x -= dx * lr
         t += 1
