@@ -13,6 +13,7 @@ def solve_ipm_newton(c, A, b):
     4. Increase t "as much as possible" such that newton's method
        still converges.
     5. Repeat (4) until a solution is found to required accuracy.
+    See https://youtu.be/4mpq-wsYBxw and my notes https://uli.rocks/p/interior-point
     """
     raise NotImplementedError()
 
