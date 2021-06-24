@@ -1,4 +1,4 @@
-from ipm import solve_ipm_gradient, solve_ipm_newton
+from ipm import solve_ipm_newton
 
 def solve_scipy(c, A, b):
     import scipy.optimize
