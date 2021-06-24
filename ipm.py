@@ -2,13 +2,25 @@ import numpy as np
 from functools import partial
 import numeric
 
-def newtons(x, gradient, hessian):
+def newton_step(x, gradient, hessian):
     """
     Preform a newton's method step returning x_{n+1} given x_n
     Details: https://uli.rocks/p/interior-point
     """
     # TODO: compute the inverse hessian symbolically (faster)
     return x - np.linalg.inv(hessian(x)) @ gradient(x)
+
+
+def optimize(step_fn, x, atol=1e-3, max_iters=100):
+    i = 0
+    while i < max_iters:
+        new_x = step_fn(x)
+        if np.allclose(new_x, x, atol=atol):
+            return new_x
+        x = new_x
+        i += 1
+
+    raise ValueError(f"did not converge after {max_iters} iterations x={x}")
 
 
 def barrier(x, A, b):
@@ -32,7 +44,7 @@ def barrier_hessian(x, A, b):
     return numeric.hessian(lambda x: barrier(x, A, b), x)
 
 
-def solve_ipm_newton(c, A, b):
+def solve_ipm_newton(c, A, b, atol=1e-3):
     """
     Interior point works as follows
     1. Define a convex barrier function F(x) which
@@ -49,23 +61,28 @@ def solve_ipm_newton(c, A, b):
 
     # 2. TODO Find x_0 as the minimum of the barrier, since the
     #    barrier is convex this is where the gradient is zero.
-    F = partial(barrier, A=A, b=b)
+    # F = partial(barrier, A=A, b=b) # not used
     nabla_F = partial(barrier_gradient, A=A, b=b)
 
     x = np.array([0.3, 0.3])
 
     # 3. Minimize f(x) = c*c@x + F(x) using gradient decent
     t = 1
-
-    def nabla_f(x):
+    def gradient_f(x):
         return t*c + nabla_F(x)
 
-    lr = 0.01
-    while t < 30:
-        # TODO: Fix this hacky garbage
-        dx = nabla_f(x)
-        dx /= np.sqrt(np.dot(dx, dx))
-        x -= dx * lr
-        t += 1
+    def hessian_f(x):
+        return barrier_hessian(x, A=A, b=b)
+
+    step_fn = partial(newton_step, gradient=gradient_f, hessian=hessian_f)
+    while True:
+        new_x = optimize(step_fn, x)
+        if np.allclose(new_x, x, atol=atol):
+            break
+
+        x = new_x
+        # TODO: Find nu for log barrier
+        t *= 5/4
+
 
     return x
